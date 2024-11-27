@@ -1,11 +1,12 @@
 import React from "react";
 
-type ToggleButtonProps = {
+type ButtonProps = React.ComponentProps<"button">;
+interface ToggleButtonProps extends ButtonProps {
   isToggled: boolean;
   onToggle: () => void;
   labelOn: string;
   labelOff: string;
-};
+}
 
 const ToggleButton: React.FC<ToggleButtonProps> = ({
   isToggled,

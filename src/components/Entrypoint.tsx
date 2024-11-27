@@ -41,12 +41,27 @@ export const Entrypoint = () => {
     setLastRefreshed(new Date().toLocaleTimeString());
   };
 
+  if (listQuery.isError) {
+    return (
+      <div className="text-red-500">
+        <p>
+          An error occurred while fetching the data. Please try again later.
+        </p>
+        <RefreshButton
+          onClick={handleRefresh}
+          className="mt-2 text-white bg-blue-500 rounded px-3 py-1"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-end">
       <div className="flex flex-col items-end pb-2">
         <RefreshButton
           onClick={handleRefresh}
           className="mt-2 text-white bg-green-500 rounded px-3 py-1"
+          disabled={listQuery.isLoading}
         />
         {lastRefreshed && (
           <p className="mt-1 text-sm text-gray-500">
@@ -55,23 +70,27 @@ export const Entrypoint = () => {
         )}
       </div>
       <div className="flex gap-x-16">
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-xl min-h-[200px]">
           <h1 className="mb-1 font-medium text-lg">
             My Awesome List ({visibleCards.length})
           </h1>
           <div className="flex flex-col gap-y-3" ref={parent}>
-            {visibleCards.map((card) => (
-              <Card
-                key={card.id}
-                id={card.id}
-                title={card.title}
-                description={card.description}
-              />
-            ))}
+            {visibleCards && visibleCards.length > 0 ? (
+              visibleCards.map((card) => (
+                <Card
+                  key={card.id}
+                  id={card.id}
+                  title={card.title}
+                  description={card.description}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500">No cards available.</p>
+            )}
           </div>
         </div>
 
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-xl min-h-[200px]">
           <div className="flex items-center justify-between">
             <h1 className="mb-1 font-medium text-lg">
               Deleted Cards ({deletedCardsCount})
@@ -81,22 +100,27 @@ export const Entrypoint = () => {
               onToggle={toggleShowDeletedCards}
               labelOn="Hide Deleted"
               labelOff="Reveal"
+              disabled={deletedCardsCount === 0}
             />
           </div>
           {showDeletedCards && (
             <div className="flex flex-col gap-y-3" ref={parent}>
-              {deletedCards.map((card) => (
-                <div
-                  key={card.id}
-                  className="border border-gray-300 px-2 py-1.5 flex justify-between items-center"
-                >
-                  <h1 className="font-medium">{card.title}</h1>
-                  <RevertButton
-                    onClick={() => revertDeletedCardById(card.id)}
-                    className="cursor-pointer w-5 h-5 text-blue-500 hover:text-blue-700"
-                  />
-                </div>
-              ))}
+              {deletedCards.length > 0 ? (
+                deletedCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="border border-gray-300 px-2 py-1.5 flex justify-between items-center"
+                  >
+                    <h1 className="font-medium">{card.title}</h1>
+                    <RevertButton
+                      onClick={() => revertDeletedCardById(card.id)}
+                      className="cursor-pointer w-5 h-5 text-blue-500 hover:text-blue-700"
+                    />
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No deleted cards available.</p>
+              )}
             </div>
           )}
         </div>
