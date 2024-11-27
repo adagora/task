@@ -1,7 +1,14 @@
 import { create } from "zustand";
 
-type State = {};
+type State = {
+    showCard: boolean;
+};
 
-type Actions = {};
+type Actions = {
+    toggleCard: () => void;
+};
 
-export const useStore = create<State & Actions>((set) => ({}));
+export const useStore = create<State & Actions>((set) => ({
+    showCard: false,
+    toggleCard: () => set((state) => ({ showCard: !state.showCard })),
+}));
