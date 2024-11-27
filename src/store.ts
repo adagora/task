@@ -11,11 +11,11 @@ type State = {
 };
 
 type Actions = {
-  toggleCard: (id: string) => void;
-  deleteCard: (id: string) => void;
+  toggleCard: (id: number) => void;
+  deleteCard: (id: number) => void;
   setVisibleCards: (cards: ListItem[]) => void;
-  revealDeletedCards: () => void;
   toggleShowDeletedCards: () => void;
+  revertDeletedCardById: (id: number) => void;
 };
 
 export const useStore = create<State & Actions>()(
@@ -46,7 +46,7 @@ export const useStore = create<State & Actions>()(
             cardVisibility: { ...state.cardVisibility, [id]: false },
             deletedCardsCount: state.deletedCardsCount + 1,
             deletedCards: cardToDelete
-              ? [...state.deletedCards, { ...cardToDelete, description: "" }]
+              ? [...state.deletedCards, cardToDelete]
               : state.deletedCards,
           };
         }),
@@ -65,12 +65,23 @@ export const useStore = create<State & Actions>()(
           deletedCards: [],
         })),
 
-      revealDeletedCards: () => set((state) => state),
-
       toggleShowDeletedCards: () =>
         set((state) => ({
           showDeletedCards: !state.showDeletedCards,
         })),
+
+      revertDeletedCardById: (id) =>
+        set((state) => {
+          const cardToRevert = state.deletedCards.find(
+            (card) => card.id === id
+          );
+          if (!cardToRevert) return state;
+          return {
+            visibleCards: [...state.visibleCards, cardToRevert],
+            deletedCards: state.deletedCards.filter((card) => card.id !== id),
+            deletedCardsCount: state.deletedCardsCount - 1,
+          };
+        }),
     }),
     {
       name: "card-storage",

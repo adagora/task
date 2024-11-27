@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGetListData } from "../api/getListData";
 import { Card } from "./List";
 import { Spinner } from "./Spinner";
 import { useStore } from "../store";
 import ToggleButton from "./ToggleButton";
+import { RevertButton } from "./Buttons";
 
 export const Entrypoint = () => {
   const listQuery = useGetListData();
@@ -14,6 +15,7 @@ export const Entrypoint = () => {
     deletedCards,
     showDeletedCards,
     toggleShowDeletedCards,
+    revertDeletedCardById,
   } = useStore();
 
   // useEffect(() => {
@@ -24,9 +26,9 @@ export const Entrypoint = () => {
   //   setVisibleCards(listQuery.data?.filter((item) => item.isVisible) ?? []);
   // }, [listQuery.data, listQuery.isLoading]);
 
-  if (listQuery.isLoading) {
-    return <Spinner />;
-  }
+  // if (listQuery.isLoading) {
+  //   return <Spinner />;
+  // }
 
   return (
     <div className="flex gap-x-16">
@@ -60,8 +62,15 @@ export const Entrypoint = () => {
         {showDeletedCards && (
           <div className="flex flex-col gap-y-3">
             {deletedCards.map((card) => (
-              <div key={card.id} className="border border-gray-300 px-2 py-1.5">
+              <div
+                key={card.id}
+                className="border border-gray-300 px-2 py-1.5 flex justify-between items-center"
+              >
                 <h1 className="font-medium">{card.title}</h1>
+                <RevertButton
+                  onClick={() => revertDeletedCardById(card.id)}
+                  className="cursor-pointer w-5 h-5 text-blue-500 hover:text-blue-700"
+                />
               </div>
             ))}
           </div>
