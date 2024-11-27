@@ -10,7 +10,13 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 export const Entrypoint = () => {
   const [lastRefreshed, setLastRefreshed] = useState<string | null>(null);
 
-  const listQuery = useGetListData();
+  const {
+    data: dataList,
+    isLoading: isLoadingList,
+    isError: isErrorList,
+    refetch: refetchList,
+  } = useGetListData();
+
   const {
     visibleCards,
     setVisibleCards,
@@ -24,24 +30,24 @@ export const Entrypoint = () => {
   const [parent] = useAutoAnimate<HTMLDivElement>();
 
   useEffect(() => {
-    if (listQuery.isLoading) {
+    if (isLoadingList) {
       return;
     }
 
-    setVisibleCards(listQuery.data?.filter((item) => item.isVisible) ?? []);
+    setVisibleCards(dataList?.filter((item) => item.isVisible) ?? []);
     setLastRefreshed(new Date().toLocaleTimeString());
-  }, [listQuery.data]);
+  }, [dataList]);
 
-  if (listQuery.isLoading) {
+  if (isLoadingList) {
     return <Spinner />;
   }
 
   const handleRefresh = () => {
-    listQuery.refetch();
+    refetchList();
     setLastRefreshed(new Date().toLocaleTimeString());
   };
 
-  if (listQuery.isError) {
+  if (isErrorList) {
     return (
       <div className="text-red-500">
         <p>
@@ -61,7 +67,7 @@ export const Entrypoint = () => {
         <RefreshButton
           onClick={handleRefresh}
           className="mt-2 text-white bg-green-500 rounded px-3 py-1"
-          disabled={listQuery.isLoading}
+          disabled={isLoadingList || isErrorList}
         />
         {lastRefreshed && (
           <p className="mt-1 text-sm text-gray-500">
@@ -70,7 +76,7 @@ export const Entrypoint = () => {
         )}
       </div>
       <div className="flex gap-x-16">
-        <div className="w-full max-w-xl min-h-[200px]">
+        <div className="w-full max-w-xl">
           <h1 className="mb-1 font-medium text-lg">
             My Awesome List ({visibleCards.length})
           </h1>
@@ -85,12 +91,12 @@ export const Entrypoint = () => {
                 />
               ))
             ) : (
-              <p className="text-gray-500">No cards available.</p>
+              <div>No cards available.</div>
             )}
           </div>
         </div>
 
-        <div className="w-full max-w-xl min-h-[200px]">
+        <div className="w-full max-w-xl card-container">
           <div className="flex items-center justify-between">
             <h1 className="mb-1 font-medium text-lg">
               Deleted Cards ({deletedCardsCount})
@@ -119,7 +125,7 @@ export const Entrypoint = () => {
                   </div>
                 ))
               ) : (
-                <p className="text-gray-500">No deleted cards available.</p>
+                <div>No deleted cards available.</div>
               )}
             </div>
           )}
