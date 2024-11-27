@@ -51,19 +51,26 @@ export const useStore = create<State & Actions>()(
           };
         }),
 
-      setVisibleCards: (cards) =>
-        set(() => ({
-          visibleCards: cards,
-          cardVisibility: cards.reduce(
-            (acc, card) => ({
-              ...acc,
-              [card.id]: false,
-            }),
-            {}
-          ),
-          deletedCardsCount: 0,
-          deletedCards: [],
-        })),
+      setVisibleCards: (newCards) =>
+        set((state) => {
+          const existingCardIds = new Set(
+            state.visibleCards.map((card) => card.id)
+          );
+          const uniqueNewCards = newCards.filter(
+            (card) => !existingCardIds.has(card.id)
+          );
+
+          return {
+            visibleCards: [...state.visibleCards, ...uniqueNewCards],
+            cardVisibility: {
+              ...state.cardVisibility,
+              ...uniqueNewCards.reduce((acc, card) => {
+                acc[card.id] = false;
+                return acc;
+              }, {} as Record<string, boolean>),
+            },
+          };
+        }),
 
       toggleShowDeletedCards: () =>
         set((state) => ({

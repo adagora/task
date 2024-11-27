@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { RevertIcon, XMarkIcon } from "./icons";
+import { RefreshIcon, RevertIcon, XMarkIcon } from "./icons";
 
 type ButtonProps = React.ComponentProps<"button">;
 
@@ -32,6 +32,17 @@ export const RevertButton: FC<Omit<ButtonProps, "children">> = (props) => {
       {...props}
     >
       <RevertIcon />
+    </button>
+  );
+};
+
+export const RefreshButton: FC<Omit<ButtonProps, "children">> = (props) => {
+  return (
+    <button
+      className="hover:text-gray-700 transition-colors flex items-center justify-center"
+      {...props}
+    >
+      <RefreshIcon />
     </button>
   );
 };
