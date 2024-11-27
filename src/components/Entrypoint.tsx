@@ -5,6 +5,7 @@ import { Spinner } from "./Spinner";
 import { useStore } from "../store";
 import ToggleButton from "./ToggleButton";
 import { RefreshButton, RevertButton } from "./Buttons";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const Entrypoint = () => {
   const [lastRefreshed, setLastRefreshed] = useState<string | null>(null);
@@ -19,6 +20,8 @@ export const Entrypoint = () => {
     toggleShowDeletedCards,
     revertDeletedCardById,
   } = useStore();
+
+  const [parent] = useAutoAnimate<HTMLDivElement>();
 
   useEffect(() => {
     if (listQuery.isLoading) {
@@ -56,7 +59,7 @@ export const Entrypoint = () => {
           <h1 className="mb-1 font-medium text-lg">
             My Awesome List ({visibleCards.length})
           </h1>
-          <div className="flex flex-col gap-y-3">
+          <div className="flex flex-col gap-y-3" ref={parent}>
             {visibleCards.map((card) => (
               <Card
                 key={card.id}
@@ -81,7 +84,7 @@ export const Entrypoint = () => {
             />
           </div>
           {showDeletedCards && (
-            <div className="flex flex-col gap-y-3">
+            <div className="flex flex-col gap-y-3" ref={parent}>
               {deletedCards.map((card) => (
                 <div
                   key={card.id}

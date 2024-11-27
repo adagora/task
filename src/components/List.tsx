@@ -3,6 +3,7 @@ import { ListItem } from "../api/getListData";
 import { DeleteButton, ExpandButton } from "./Buttons";
 import { ChevronUpIcon } from "./icons";
 import { useStore } from "../store";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 type CardProps = {
   title: ListItem["title"];
@@ -13,6 +14,7 @@ type CardProps = {
 export const Card: FC<CardProps> = ({ title, description, id }) => {
   const { cardVisibility, toggleCard, deleteCard } = useStore();
   const showCard = cardVisibility[id] || false;
+  const [parent] = useAutoAnimate<HTMLDivElement>();
 
   return (
     <div className="border border-black px-2 py-1.5">
@@ -25,7 +27,9 @@ export const Card: FC<CardProps> = ({ title, description, id }) => {
           <DeleteButton onClick={() => deleteCard(id)} />
         </div>
       </div>
-      {showCard ? <p className="text-sm">{description}</p> : null}
+      <div ref={parent}>
+        {showCard ? <p className="text-sm">{description}</p> : null}
+      </div>
     </div>
   );
 };
