@@ -7,20 +7,22 @@ import { useStore } from "../store";
 type CardProps = {
   title: ListItem["title"];
   description: ListItem["description"];
+  id: ListItem["id"];
 };
 
-export const Card: FC<CardProps> = ({ title, description }) => {
-  const { showCard, toggleCard } = useStore();
+export const Card: FC<CardProps> = ({ title, description, id }) => {
+  const { cardVisibility, toggleCard, deleteCard } = useStore();
+  const showCard = cardVisibility[id] || false;
 
   return (
     <div className="border border-black px-2 py-1.5">
       <div className="flex justify-between mb-0.5">
         <h1 className="font-medium">{title}</h1>
         <div className="flex">
-          <ExpandButton onClick={toggleCard}>
+          <ExpandButton onClick={() => toggleCard(id)}>
             <ChevronUpIcon />
           </ExpandButton>
-          <DeleteButton />
+          <DeleteButton onClick={() => deleteCard(id)} />
         </div>
       </div>
       {showCard ? <p className="text-sm">{description}</p> : null}
